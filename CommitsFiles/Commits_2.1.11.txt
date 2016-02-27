@@ -1,0 +1,109 @@
+commit a85afbc7a83709da8d96d92fc4154675794ca7fb
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Tue Oct 13 11:18:55 2015 -0500
+
+    Update cqlsh COPY for new driver conn interface
+    
+    Patch by Stefania Alborghetti; reviewed by Paulo Motta for
+    CASSANDRA-10507
+a
+ CHANGES.txt | 2 +-
+ bin/cqlsh   | 6 +-----
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+commit c3ba6c8bdea7f0528f947d34fec2a9dd81d6142a
+Author: Benedict Elliott Smith <benedict@apache.org>
+Date:   Tue Oct 13 09:33:35 2015 +0100
+
+    ninja-fix handling of unfinished serialized boundaries (bug from CASSANDRA-10357)
+
+ src/java/org/apache/cassandra/io/util/MmappedSegmentedFile.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 4acc3a69d319b0e7e00cbd37b27e988ebfa4df4f
+Author: Benedict Elliott Smith <benedict@apache.org>
+Date:   Mon Oct 12 15:12:56 2015 +0100
+
+    ninja comment out broken test line in MmappedFileDataInputTest
+
+ test/unit/org/apache/cassandra/io/util/MappedFileDataInputTest.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 182d28c2ffb7ab9488698fec1034a91134167ade
+Author: T Jake Luciani <jake@apache.org>
+Date:   Mon Oct 12 09:53:25 2015 -0400
+
+    update news.txt
+
+ NEWS.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+commit df6b27e36c113607b23f000507520a9199bb3e52
+Author: T Jake Luciani <jake@apache.org>
+Date:   Mon Oct 12 09:46:49 2015 -0400
+
+    bump versions for 2.1.11
+
+ build.xml        | 2 +-
+ debian/changelog | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+commit f87e34ed3c82a7b0b73178a6ce565a1227a7457b
+Author: Benedict Elliott Smith <benedict@apache.org>
+Date:   Thu Oct 8 16:40:22 2015 +0100
+
+    Fix seeking to end of mmap segment
+    
+    patch by benedict; reviewed by jake for CASSANDRA-10478
+
+ CHANGES.txt                                        |  1 +
+ .../cassandra/io/util/MappedFileDataInput.java     |  8 +--
+ .../cassandra/io/util/MappedFileDataInputTest.java | 67 ++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 7 deletions(-)
+
+commit 94b6471b93cc55dd078158e7eb00416b79e5d034
+Author: Sylvain Lebresne <sylvain@datastax.com>
+Date:   Fri Oct 9 13:50:24 2015 +0200
+
+    Add Branimir's test from CASSANDRA-10219
+
+ .../unit/org/apache/cassandra/db/KeyCacheTest.java | 55 ++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+commit ad93f3b6eb2b49f47cb55e09a9edfe42ce9e00e9
+Author: Thorkild Stray <thorkild-asfjira@stray.priv.no>
+Date:   Fri Oct 9 13:06:33 2015 +0200
+
+    Allow LOCAL_JMX to be easily overridden
+    
+    patch by Thorkild Stray ; reviewed by Robert Stupp for CASSANDRA-10275
+
+ CHANGES.txt           | 1 +
+ conf/cassandra-env.sh | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+commit 484e6452bf08cf89fe37d5068fc7a6fb77058410
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Fri Aug 28 14:51:57 2015 +0800
+
+    Mark node as dead even if already left
+    
+    Patch by Stefania Alborghetti; reviewed by Joel Knighton for
+    CASSANDRA-10205
+
+ CHANGES.txt                                     |  1 +
+ src/java/org/apache/cassandra/gms/Gossiper.java | 11 +++++++----
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+commit 1b08cbd817dea379ea84175381d3ef151fe65681
+Author: Carl Yeksigian <carl@apache.org>
+Date:   Wed Sep 30 11:13:20 2015 -0400
+
+    Update python driver to 2.7.2
+    
+    Patch by carl; reviewed by tjake for CASSANDRA-10161
+
+ CHANGES.txt                                         |   3 +++
+ lib/cassandra-driver-internal-only-2.6.0c2.post.zip | Bin 198346 -> 0 bytes
+ lib/cassandra-driver-internal-only-2.7.2.zip        | Bin 0 -> 229600 bytes
+ 3 files changed, 3 insertions(+)

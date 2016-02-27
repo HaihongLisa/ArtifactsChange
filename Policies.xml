@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- It uses to control whether the policies can be used or not -->
+<policies>
+	<dataset>JIRA
+		<policy>ByJiraID</policy>
+		<policy>ByDate</policy>
+		<policy>ByKeyWord</policy>
+	</dataset>
+</policies>

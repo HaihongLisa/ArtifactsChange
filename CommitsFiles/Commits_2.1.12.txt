@@ -1,0 +1,988 @@
+commit a6619e56b10580627fbc7863862c5aaebef57518
+Author: T Jake Luciani <jake@apache.org>
+Date:   Wed Dec 2 10:50:22 2015 -0500
+
+    bump 2.1 versions
+
+ build.xml        | 2 +-
+ debian/changelog | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+commit 1538c0921444d7969ebd07ca1abda9a7e40e4c73
+Author: Yuki Morishita <yukim@apache.org>
+Date:   Wed Dec 2 08:41:11 2015 -0600
+
+    Fix incremental repair hang when replica is down
+    
+    patch by yukim; reviewed by marcuse for CASSANDRA-10288
+
+ CHANGES.txt                                        |  1 +
+ .../cassandra/repair/AnticompactionTask.java       | 29 ++++++++++++++--------
+ .../cassandra/service/ActiveRepairService.java     | 17 ++++++++++---
+ 3 files changed, 33 insertions(+), 14 deletions(-)
+
+commit 0b26ca68747cdecb907d7c238e04b39836efe3d1
+Author: Branimir Lambov <branimir.lambov@datastax.com>
+Date:   Tue Dec 1 11:38:09 2015 +0200
+
+    Avoid writing range tombstones after END_OF_ROW marker.
+    
+    Patch by Branimir Lambov; reviewed by marcuse for CASSANDRA-10791
+
+ CHANGES.txt                                        |   1 +
+ src/java/org/apache/cassandra/db/ColumnIndex.java  |  16 +++--
+ .../org/apache/cassandra/db/RangeTombstone.java    |   5 ++
+ .../apache/cassandra/db/compaction/Scrubber.java   |  25 ++++++-
+ .../io/sstable/SSTableIdentityIterator.java        |  79 +++++++++++++++++----
+ .../apache/cassandra/io/sstable/SSTableWriter.java |   2 +
+ .../Keyspace1-Standard3-jb-1-Summary.db            | Bin 71 -> 63 bytes
+ .../Keyspace1-StandardInteger1-ka-2-CRC.db         | Bin 0 -> 8 bytes
+ .../Keyspace1-StandardInteger1-ka-2-Data.db        | Bin 0 -> 12357 bytes
+ .../Keyspace1-StandardInteger1-ka-2-Digest.sha1    |   1 +
+ .../Keyspace1-StandardInteger1-ka-2-Filter.db      | Bin 0 -> 176 bytes
+ .../Keyspace1-StandardInteger1-ka-2-Index.db       | Bin 0 -> 108 bytes
+ .../Keyspace1-StandardInteger1-ka-2-Statistics.db  | Bin 0 -> 4470 bytes
+ .../Keyspace1-StandardInteger1-ka-2-Summary.db     | Bin 0 -> 80 bytes
+ .../Keyspace1-StandardInteger1-ka-2-TOC.txt        |   8 +++
+ .../org/apache/cassandra/db/RowIndexEntryTest.java |   1 +
+ test/unit/org/apache/cassandra/db/ScrubTest.java   |  57 ++++++++++++++-
+ .../cassandra/streaming/StreamingTransferTest.java |  46 +++++++++++-
+ 18 files changed, 215 insertions(+), 26 deletions(-)
+
+commit 51753263a4c4d50c5bbe7bb80636cca5b6458ecf
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Tue Dec 1 10:41:05 2015 -0800
+
+    Revert changes to names of public methods on Gossiper
+    
+    Patch and review by Paulo Motta and Stefania Alborghetti to
+    follow up CASSANDRA-10243
+
+ src/java/org/apache/cassandra/gms/Gossiper.java     | 21 ++++++++++++++++-----
+ .../cassandra/locator/PropertyFileSnitch.java       |  6 ++----
+ .../locator/YamlFileNetworkTopologySnitch.java      |  4 ++--
+ .../apache/cassandra/service/MigrationManager.java  |  4 ++--
+ .../org/apache/cassandra/service/StorageProxy.java  |  8 ++++----
+ .../apache/cassandra/service/StorageService.java    | 14 +++++++-------
+ 6 files changed, 33 insertions(+), 24 deletions(-)
+
+commit dbfeeac177074692bdf71d98ffb2cacb14802fb3
+Author: Marcus Eriksson <marcuse@apache.org>
+Date:   Wed Nov 25 11:28:51 2015 +0100
+
+    Optimize the way we check if a token is repaired in anticompaction
+    
+    Patch by marcuse; reviewed by Ariel Weisberg for CASSANDRA-10768
+
+ CHANGES.txt                                        |  1 +
+ .../cassandra/db/compaction/CompactionManager.java |  4 +-
+ src/java/org/apache/cassandra/dht/Range.java       | 44 ++++++++++++++
+ test/unit/org/apache/cassandra/dht/RangeTest.java  | 67 ++++++++++++++++++++++
+ 4 files changed, 114 insertions(+), 2 deletions(-)
+
+commit 5ba69a32590074610f5516a20b8198416b79dfcf
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Fri Nov 27 16:37:37 2015 -0800
+
+    Add proper error handling to stream receiver
+    
+    patch by Paulo Motta; reviewed by yukim for CASSANDRA-10774
+
+ CHANGES.txt                                        |   1 +
+ .../cassandra/streaming/StreamReceiveTask.java     | 105 ++++++++++++---------
+ 2 files changed, 59 insertions(+), 47 deletions(-)
+
+commit 7650fc196341bd673626054593f2ce6e895d7783
+Author: Stefania <stefania.alborghetti@datastax.com>
+Date:   Fri Nov 27 13:49:15 2015 +0100
+
+    Warn or fail when changing cluster topology live
+    
+    patch by Stefania; reviewed by Paulo Motta for CASSANDRA-10243
+
+ CHANGES.txt                                        |   1 +
+ NEWS.txt                                           |   6 +
+ build.xml                                          |   1 +
+ src/java/org/apache/cassandra/gms/Gossiper.java    |  28 +-
+ .../locator/GossipingPropertyFileSnitch.java       | 107 ++-----
+ .../cassandra/locator/PropertyFileSnitch.java      |  74 ++++-
+ .../apache/cassandra/locator/SnitchProperties.java |   5 +
+ .../locator/YamlFileNetworkTopologySnitch.java     | 111 +++++--
+ .../apache/cassandra/service/MigrationManager.java |   4 +-
+ .../org/apache/cassandra/service/StorageProxy.java |  10 +-
+ .../apache/cassandra/service/StorageService.java   |  32 +-
+ .../locator/GossipingPropertyFileSnitchTest.java   |  35 +--
+ .../cassandra/locator/PropertyFileSnitchTest.java  | 321 +++++++++++++++++++++
+ .../locator/YamlFileNetworkTopologySnitchTest.java | 293 +++++++++++++++++--
+ 14 files changed, 823 insertions(+), 205 deletions(-)
+
+commit 8cd13f1381dff81aa5dfe0f6b630fa8198aa0d2b
+Author: Ruggero Marchei <ruggero.marchei@daemonzone.net>
+Date:   Fri Nov 27 12:57:49 2015 +0100
+
+    Status command in debian/ubuntu init script doesn't work
+    
+    patch by Ruggero Marchei; reviewed by Michael Shuler for CASSANDRA-10213
+
+ CHANGES.txt | 1 +
+ debian/init | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+commit 4ecbbc08206fc5cd2e91520a5b99ef890f1da75d
+Author: Robert Stupp <snazy@snazy.de>
+Date:   Fri Nov 27 10:42:38 2015 +0100
+
+    Some DROP ... IF EXISTS incorrectly result in exceptions on non-existing KS
+    
+    patch by Robert Stupp; reviewed by Marcus Eriksson for CASSANDRA-10658
+
+ CHANGES.txt                                        |  1 +
+ .../cql3/statements/DropTypeStatement.java         | 10 ++++--
+ .../cql3/validation/entities/TypeTest.java         | 10 ++++++
+ .../cql3/validation/operations/DropTest.java       | 37 ++++++++++++++++++++++
+ 4 files changed, 56 insertions(+), 2 deletions(-)
+
+commit b8a8004d833e16d71be416e8cb5bb8541c81fc12
+Author: Robert Stupp <snazy@snazy.de>
+Date:   Fri Nov 27 09:28:38 2015 +0100
+
+    DeletionTime.compareTo wrong in rare cases
+    
+    patch by Robert Stupp; reviewed by Sylvain Lebresne for CASSANDRA-10749
+
+ CHANGES.txt                                        | 1 +
+ src/java/org/apache/cassandra/db/DeletionTime.java | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+commit b5b9f7106d66eda6e41cea292bc569886b701448
+Author: Stefan Podkowinski <stefan.podkowinski@1und1.de>
+Date:   Mon Nov 23 17:12:35 2015 +0100
+
+    Force encoding charset when computed prepared statement IDs
+    
+    patch by Stefan Podkowinski; reviewed by slebresne for CASSANDRA-10755
+
+ CHANGES.txt                                        |  1 +
+ src/java/org/apache/cassandra/utils/MD5Digest.java | 10 +++++++++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+commit cdf0485b23de6d2b746393237da3cfea9d0dc4b9
+Author: Michael Edge <edge.michael@gmail.com>
+Date:   Thu Nov 26 10:36:33 2015 +0100
+
+    Refuse counters as map keys
+    
+    patch by michaeledge; reviewed by slebresne for CASSANDRA-10760
+
+ CHANGES.txt                                      | 1 +
+ src/java/org/apache/cassandra/cql3/CQL3Type.java | 2 ++
+ 2 files changed, 3 insertions(+)
+
+commit 3d99418cfd641b30b393c9e61cc2b4f5e864d14d
+Author: Jakub Janecek <janecek.jakub@gmail.com>
+Date:   Wed Nov 25 13:51:14 2015 +0100
+
+    Fix the sstable-needs-cleanup check
+    
+    Patch by Jakub Janecek; reviewed by marcuse for CASSANDRA-10740
+
+ CHANGES.txt                                        |  1 +
+ .../cassandra/db/compaction/CompactionManager.java |  6 +-
+ test/unit/org/apache/cassandra/db/CleanupTest.java | 75 ++++++++++++++++++++++
+ 3 files changed, 80 insertions(+), 2 deletions(-)
+
+commit 9768e57e3e855c8049614342053199940a6c65f6
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Mon Nov 23 08:55:37 2015 +0800
+
+    CASSANDRA-9304 follow-up: fix cqlshlib tests
+    
+    Patch by Stefania Alborghetti; reviewed by Tyler Hobbs as a
+    follow-up to CASSANDRA-9304
+
+ pylib/cqlshlib/formatting.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 68ea4edb33a9907a1a2e1cde0374a52225b519b0
+Author: Michael Edge <edge.michael@gmail.com>
+Date:   Wed Nov 25 11:54:11 2015 -0600
+
+    cqlsh: print column names before COPY operation
+    
+    Patch by Michael Edge; reviewed by Tyler Hobbs for CASSANDRA-8935
+
+ CHANGES.txt | 1 +
+ bin/cqlsh   | 2 ++
+ 2 files changed, 3 insertions(+)
+
+commit 5cafe8606fa1f28b535c69c57f78593c4e6ea85a
+Author: Wei Deng <weideng@gmail.com>
+Date:   Mon Aug 10 22:57:49 2015 -0600
+
+    Add the missing Native-Transport-Requests in tpstats back
+    
+    Patch by Wei Deng; reviewed by tjake for CASSANDRA-10044
+
+ CHANGES.txt                                        | 1 +
+ src/java/org/apache/cassandra/tools/NodeProbe.java | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+commit f5a09c125cce2078832c20f35eba3ab43eb5c36b
+Author: Sam Tunnicliffe <sam@beobal.com>
+Date:   Tue Nov 10 18:18:45 2015 +0000
+
+    Make internal paging logic consistent between searcher impls
+    
+    Patch by Sam Tunnicliffe; reviewed by Carl Yeksigian for CASSANDRA-10683
+
+ CHANGES.txt                                                   | 1 +
+ src/java/org/apache/cassandra/db/index/keys/KeysSearcher.java | 3 +--
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit f319f0a236c09a3f97cf33c3efa56fc8abb0d0fe
+Author: Michael Edge <edge.michael@gmail.com>
+Date:   Tue Nov 24 14:51:35 2015 +0100
+
+    Fix inconsistencies within CQLSH help
+    
+    patch by Michael Edge; reviewed by Benjamin Lerer for CASSANDRA-10719
+
+ bin/cqlsh | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+commit 8b9a9161caf678bfe2ead7aa970fc6b607372c42
+Author: Chris Moos <chris@chrismoos.com>
+Date:   Mon Nov 23 12:31:24 2015 -0600
+
+    Fix CompressedInputStream for proper cleanup
+    
+    patch by Chris Moos and yukim; reviewed by Paulo Motta for CASSANDRA-10012
+
+ CHANGES.txt                                        |  1 +
+ .../streaming/compress/CompressedInputStream.java  | 46 ++++++++--
+ .../streaming/compress/CompressedStreamReader.java |  4 +
+ .../compress/CompressedInputStreamTest.java        | 98 ++++++++++++++++------
+ 4 files changed, 117 insertions(+), 32 deletions(-)
+
+commit 4a94f75b0177cab18539317c3f58db2014091a9b
+Author: Ariel Weisberg <ariel.weisberg@datastax.com>
+Date:   Mon Nov 16 11:05:35 2015 -0500
+
+    Fix RecoveryManagerTruncateTest failing in test-compression
+    
+    when unsafely resetting the commit log always sync first so records prior to the rest are usable
+    
+    patch by Ariel Weisberg; reviewed by Aleksey Yeschenko for
+    CASSANDRA-9355
+
+ src/java/org/apache/cassandra/db/commitlog/CommitLog.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 05ccdc6411b9d3388a74ba06d1ce153d33ffe1c3
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Thu Nov 19 09:02:03 2015 +0800
+
+    Improve COPY command to work with Counter columns
+    
+    patch by jasonstack; reviewed by Stefania for CASSANDRA-9043
+
+ CHANGES.txt |  1 +
+ bin/cqlsh   | 27 +++++++++++++++++++++------
+ 2 files changed, 22 insertions(+), 6 deletions(-)
+
+commit 882adf0ae638c69928e14ed7e34de7364ed65ba1
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Mon Aug 24 17:21:57 2015 -0300
+
+    Try next replica if not possible to connect to primary replica on ColumnFamilyRecordReader
+    
+    patch by pauloricardomg; reviewed by pkolaczk for CASSANDRA-2388
+
+ CHANGES.txt                                        |  2 ++
+ .../cassandra/hadoop/ColumnFamilyRecordReader.java | 35 ++++++++++++----------
+ 2 files changed, 21 insertions(+), 16 deletions(-)
+
+commit 851aed7ee78684dd1de03d5c3771117840c8e0f0
+Author: Marcus Eriksson <marcuse@apache.org>
+Date:   Fri Nov 20 12:01:30 2015 +0100
+
+    update NEWS.txt for CASSANDRA-10280
+
+ NEWS.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit 99617a529378f00cb86ab733959c7be9966860c9
+Author: Marcus Eriksson <marcuse@apache.org>
+Date:   Tue Sep 8 13:50:16 2015 +0200
+
+    Limit size of windows with DTCS
+    
+    Patch by marcuse; reviewed by Branimir Lambov for CASSANDRA-10280
+
+ CHANGES.txt                                        |  1 +
+ pylib/cqlshlib/cql3handling.py                     |  1 +
+ .../compaction/DateTieredCompactionStrategy.java   | 33 ++++++++++---------
+ .../DateTieredCompactionStrategyOptions.java       | 30 +++++++++++++++--
+ .../DateTieredCompactionStrategyTest.java          | 38 ++++++++++++++--------
+ 5 files changed, 73 insertions(+), 30 deletions(-)
+
+commit 4f2337f6d04669f2032f612ff556c025c85fadb0
+Author: Michael Shuler <michael@pbandjelly.org>
+Date:   Thu Nov 19 11:07:29 2015 +0100
+
+    sstableloader does not use MAX_HEAP_SIZE env parameter
+    
+    patch by Michael Shuler; reviewed by Robert Stupp for CASSANDRA-10188
+
+ CHANGES.txt       | 1 +
+ bin/sstableloader | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+commit 1b629c101bbf793f8e248bbf4396bb41adc0af97
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Wed Nov 18 18:22:28 2015 -0600
+
+    cqlsh: Improve COPY TO perf and error handling
+    
+    Patch by Stefania Alborghetti; reviewed by Tyler Hobbs for
+    CASSANDRA-9304
+
+ CHANGES.txt                  |   1 +
+ bin/cqlsh                    | 180 ++++--------
+ pylib/cqlshlib/copy.py       | 644 +++++++++++++++++++++++++++++++++++++++++++
+ pylib/cqlshlib/displaying.py |  10 +
+ pylib/cqlshlib/formatting.py |  34 ++-
+ 5 files changed, 729 insertions(+), 140 deletions(-)
+
+commit 246cb883ab09bc69e842b8124c1537b38bb54335
+Author: Marcus Eriksson <marcuse@apache.org>
+Date:   Thu Nov 12 08:12:01 2015 +0100
+
+    Don't remove level info when running upgradesstables
+    
+    Patch by marcuse; reviewed by yukim for CASSANDRA-10692
+
+ CHANGES.txt                                        |  1 +
+ .../db/compaction/WrappingCompactionStrategy.java  | 15 ++++++++++
+ .../compaction/LeveledCompactionStrategyTest.java  | 35 ++++++++++++++++++++++
+ 3 files changed, 51 insertions(+)
+
+commit 5a665b805ea8755112a5f1d0d81e8cbc41915eb0
+Author: Jeremiah D Jordan <jeremiah@datastax.com>
+Date:   Wed Nov 11 14:30:11 2015 -0600
+
+    Add file path to CorruptSSTableException message
+    
+    patch by Jeremiah D Jordan; reviewed by Aleksey Yeschenko for
+    CASSANDRA-10582
+
+ src/java/org/apache/cassandra/io/sstable/CorruptSSTableException.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 8385bb639ad8a6a86393a05813fd9b0b45876a2e
+Author: Yuki Morishita <yukim@apache.org>
+Date:   Mon Nov 9 23:01:31 2015 -0600
+
+    Create compression chunk when sending file only
+    
+    patch by yukim; reviewed by Paulo Motta for CASSANDRA-10680
+
+ CHANGES.txt                                        |  1 +
+ .../cassandra/io/compress/CompressionMetadata.java | 30 +++++++++++++
+ .../streaming/messages/FileMessageHeader.java      | 49 +++++++++++++++++++---
+ .../streaming/messages/IncomingFileMessage.java    |  2 +-
+ .../streaming/messages/OutgoingFileMessage.java    | 15 ++-----
+ .../compress/CompressedInputStreamTest.java        |  7 ++++
+ 6 files changed, 87 insertions(+), 17 deletions(-)
+
+commit 9b977660570cfac754d40b84439f1f4cd57b8a9f
+Author: Al Tobey <tobert@gmail.com>
+Date:   Tue Nov 17 14:14:48 2015 +0000
+
+    Make buffered read size configurable
+    
+    patch by Al Tobey; reviewed by Aleksey Yeschenko for CASSANDRA-10249
+
+ CHANGES.txt                                                   | 1 +
+ src/java/org/apache/cassandra/io/util/RandomAccessReader.java | 7 ++++---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+commit 5414950d6a42a2f7d41dec6427cbf210dd7d99af
+Author: Aleksey Yeschenko <aleksey@apache.org>
+Date:   Wed Nov 11 18:45:50 2015 +0000
+
+    Forbid compact clustering column type changes in ALTER TABLE
+    
+    patch by Aleksey Yeschenko; reviewed by Sylvain Lebresne for
+    CASSANDRA-8879
+
+ CHANGES.txt                                                       | 1 +
+ .../org/apache/cassandra/cql3/statements/AlterTableStatement.java | 3 +++
+ .../apache/cassandra/cql3/validation/operations/AlterTest.java    | 8 ++++++++
+ 3 files changed, 12 insertions(+)
+
+commit a8e8a67306c0b26b8fe9c74a1fb00bacfa224cf7
+Author: Ariel Weisberg <ariel.weisberg@datastax.com>
+Date:   Thu Oct 29 12:36:32 2015 -0400
+
+    Reject incremental repair requests combined with subrange repair
+    
+    Patch by Ariel Weisberg; reviewed by marcuse for CASSANDRA-10422
+
+ CHANGES.txt                                                         | 1 +
+ src/java/org/apache/cassandra/service/StorageService.java           | 3 +++
+ .../unit/org/apache/cassandra/service/StorageServiceServerTest.java | 6 ++++++
+ 3 files changed, 10 insertions(+)
+
+commit 7e056fa27047a868660ff796734dcbd485e1b29a
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Fri Nov 13 09:56:08 2015 -0500
+
+    Fix CompressionInfo not being synced on close
+    
+    Patch by stefania; reviewed by aweisberg for CASSANDRA-10534
+
+ .../org/apache/cassandra/io/compress/CompressionMetadata.java | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+commit e291382fd00e4c7fc9258116885267515da3c49c
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Fri Nov 13 09:46:57 2015 -0500
+
+    Fix missing host ID on hinted handoff write
+    
+    Patch by pauloricardomg; reviewed by aweisberg for CASSANDRA-10485
+
+ src/java/org/apache/cassandra/db/HintedHandOffManager.java | 12 +++++-------
+ src/java/org/apache/cassandra/service/StorageProxy.java    | 11 ++++++-----
+ test/unit/org/apache/cassandra/db/HintedHandOffTest.java   |  5 +++--
+ 3 files changed, 14 insertions(+), 14 deletions(-)
+
+commit 582b66fbdfbedd8eb14b16c9f6522067ea921a13
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Fri Nov 13 09:13:14 2015 -0500
+
+    Follow up to 10089 - fix possible NPE in Gossiper.getStateForVersionBiggerThan
+
+ src/java/org/apache/cassandra/gms/Gossiper.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit ecd66de2bdf2ecb88c4276a4616a76f5ec2921bb
+Author: Carl Yeksigian <carl@apache.org>
+Date:   Tue Nov 10 17:22:11 2015 +0000
+
+    Add nodetool command to refresh system.size_estimates
+
+ CHANGES.txt                                                  |  2 ++
+ src/java/org/apache/cassandra/service/StorageService.java    |  6 ++++++
+ .../org/apache/cassandra/service/StorageServiceMBean.java    |  5 +++++
+ src/java/org/apache/cassandra/tools/NodeProbe.java           | 12 ++++++++++++
+ src/java/org/apache/cassandra/tools/NodeTool.java            | 11 +++++++++++
+ 5 files changed, 36 insertions(+)
+
+commit 9ab1c8372dc9da1e085120bd4377be74d0413759
+Author: Yuki Morishita <yukim@apache.org>
+Date:   Thu Nov 12 09:43:36 2015 -0600
+
+    Add CASSANDRA-10079 change to CHANGES.txt
+
+ CHANGES.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 1c3ff9242a0bfc5c544c69f68ee7b17a464a5ab3
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Wed Nov 11 13:26:22 2015 -0600
+
+    Invalidate row/counter cache after stream receive task is completed
+    
+    patch by Paulo Motta; reviewed by yukim for CASSANDRA-10341
+
+ CHANGES.txt                                        |  1 +
+ .../org/apache/cassandra/db/ColumnFamilyStore.java | 31 +++++++++++
+ .../db/compaction/CompactionController.java        |  5 --
+ src/java/org/apache/cassandra/dht/Bounds.java      | 62 ++++++++++++++++++++++
+ .../cassandra/io/sstable/SSTableRewriter.java      |  1 -
+ .../apache/cassandra/streaming/StreamReader.java   |  1 -
+ .../cassandra/streaming/StreamReceiveTask.java     | 36 +++++++++++++
+ .../org/apache/cassandra/db/CounterCacheTest.java  | 45 ++++++++++++++++
+ .../unit/org/apache/cassandra/db/RowCacheTest.java | 61 ++++++++++++++++++---
+ test/unit/org/apache/cassandra/dht/BoundsTest.java | 61 +++++++++++++++++++++
+ 10 files changed, 291 insertions(+), 13 deletions(-)
+
+commit 6bad57fc3cf967838a220d8402db37ed9a5b3b4e
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Wed Nov 11 15:02:26 2015 -0500
+
+    Fix NPE in Gossip handleStateNormal
+    
+    Patch by stefania; reviewed by jknighton for CASSANDRA-10089
+
+ .../org/apache/cassandra/gms/EndpointState.java    |  76 ++++++----
+ .../org/apache/cassandra/gms/FailureDetector.java  |   7 +-
+ src/java/org/apache/cassandra/gms/Gossiper.java    |  47 +++---
+ .../org/apache/cassandra/gms/VersionedValue.java   |   5 +
+ .../apache/cassandra/service/StorageService.java   |  65 ++++-----
+ .../apache/cassandra/gms/EndpointStateTest.java    | 159 +++++++++++++++++++++
+ .../cassandra/locator/CloudstackSnitchTest.java    |   8 +-
+ .../apache/cassandra/locator/EC2SnitchTest.java    |   4 +-
+ .../cassandra/locator/GoogleCloudSnitchTest.java   |   8 +-
+ 9 files changed, 283 insertions(+), 96 deletions(-)
+
+commit 3674ad9dab8f29173d7d4ee82488a8e9ea586240
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Thu Oct 22 11:38:31 2015 -0700
+
+    Reject counter writes in CQLSSTableWriter
+    
+    patch by Paulo Motta; reviewed by Aleksey Yeschenko for CASSANDRA-10258
+
+ CHANGES.txt                                        |  1 +
+ .../cassandra/io/sstable/CQLSSTableWriter.java     |  2 ++
+ .../cassandra/io/sstable/CQLSSTableWriterTest.java | 22 ++++++++++++++++++++++
+ 3 files changed, 25 insertions(+)
+
+commit 852a8babd4bafe26de91049cec37ffe6fb33cacb
+Author: anubhavkale <anubhavk@microsoft.com>
+Date:   Tue Oct 27 14:50:43 2015 -0700
+
+    Remove superfluous COUNTER_MUTATION stage mapping
+    
+    patch by Anubhav Kale; reviewed by Aleksey Yeschenko for CASSANDRA-10605
+
+ CHANGES.txt                                             | 1 +
+ src/java/org/apache/cassandra/net/MessagingService.java | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+commit ff9b6bb973db7f6ebe650d909d24dcf5aebcfae5
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Mon Oct 5 15:04:09 2015 -0700
+
+    Improve json2sstable error reporting on nonexistent columns
+    
+    patch by Paulo Motta; reviewed by Ariel Weisberg for CASSANDRA-10401
+
+ CHANGES.txt                                                 | 1 +
+ src/java/org/apache/cassandra/tools/SSTableImport.java      | 5 +++++
+ test/unit/org/apache/cassandra/tools/SSTableImportTest.java | 9 +++++++++
+ 3 files changed, 15 insertions(+)
+
+commit 2548365a6ed44c93c31984e14281ba9e29aff3b8
+Author: Aleksey Yeschenko <aleksey@apache.org>
+Date:   Fri Nov 6 17:52:53 2015 +0000
+
+    Revert "(cqlsh) show partial trace if incomplete after max_trace_wait"
+    
+    This reverts commit 626ac94cd53323cf84f92ab0d1f3e2a8c765f22b.
+
+ CHANGES.txt | 2 --
+ bin/cqlsh   | 3 ---
+ 2 files changed, 5 deletions(-)
+
+commit 81e520c54be8d397abbbbfaa0adf97178beccbf3
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Tue Nov 3 09:10:22 2015 +0800
+
+    (cqlsh) fix COPY using wrong variable name for time_format
+    
+    patch by Stefania Alborghetti; reviewed by Paulo Motta for
+    CASSANDRA-10633
+
+ CHANGES.txt | 1 +
+ bin/cqlsh   | 7 +++----
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 2ca7599023a1e507f263b0c4854ab26b3ba283ac
+Author: Paulo Motta <pauloricardomg@gmail.com>
+Date:   Thu Oct 29 12:03:21 2015 -0700
+
+    Do not run SizeEstimatesRecorder if a node is not a member of the ring
+    
+    patch by Paulo Motta; reviewed by Joel Knighton for CASSANDRA-9912
+
+ CHANGES.txt                                              |  1 +
+ .../org/apache/cassandra/db/SizeEstimatesRecorder.java   |  5 +++--
+ src/java/org/apache/cassandra/db/SystemKeyspace.java     | 16 ----------------
+ .../org/apache/cassandra/service/StorageService.java     |  5 +----
+ 4 files changed, 5 insertions(+), 22 deletions(-)
+
+commit b6015fa4883182531d66527780fce34c9b125e46
+Author: Dikang Gu <dikang85@gmail.com>
+Date:   Wed Nov 4 13:50:33 2015 +0000
+
+    Improve handling of dead nodes in gossip
+    
+    patch by Dikang Gu; reviewed by Stefania Alborghetti for CASSANDRA-10298
+
+ CHANGES.txt                                               |  1 +
+ .../org/apache/cassandra/db/HintedHandOffManager.java     |  4 ++++
+ src/java/org/apache/cassandra/service/StorageService.java | 15 ++++++++++++---
+ 3 files changed, 17 insertions(+), 3 deletions(-)
+
+commit dc73c0b31feb399750c5a6823854714ee711152e
+Author: Mike Adamson <madamson@datastax.com>
+Date:   Wed Nov 4 12:21:54 2015 +0000
+
+    Fix logback-tools.xml incorrectly configured for outputing to System.err
+    
+    patch by Mike Adamson; reviewed by Jeremiah Jordan for CASSANDRA-9937
+
+ CHANGES.txt            | 2 ++
+ conf/logback-tools.xml | 3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+commit 068614ccc7ba6c5b8ccb50a0840af57bb45b4b36
+Author: Yuki Morishita <yukim@apache.org>
+Date:   Tue Oct 20 14:25:55 2015 -0500
+
+    Fix streaming to catch exception so retry not fail
+    
+    patch by yukim; reviewed by Paulo Motta for CASSANDRA-10557
+
+ CHANGES.txt                                             |  1 +
+ .../org/apache/cassandra/streaming/StreamReader.java    | 16 ++++++++++++++--
+ .../streaming/compress/CompressedStreamReader.java      | 17 ++++++++++++++---
+ 3 files changed, 29 insertions(+), 5 deletions(-)
+
+commit 986a1a769437bf1e47248e257772a074c27bac92
+Author: Benedict Elliott Smith <benedict@apache.org>
+Date:   Mon Oct 26 16:50:39 2015 +0000
+
+    10579: fix NativeCell behaviour when clustering components > 32K in size
+
+ .../apache/cassandra/utils/btree/NodeBuilder.java  |  9 ++++---
+ .../apache/cassandra/utils/memory/MemoryUtil.java  |  2 +-
+ .../org/apache/cassandra/db/NativeCellTest.java    | 31 +++++++++++++++++++++-
+ 3 files changed, 36 insertions(+), 6 deletions(-)
+
+commit 83fb3cc42209d27ad8b906a17df64832b3f84fb0
+Author: Sylvain Lebresne <sylvain@datastax.com>
+Date:   Fri Oct 30 09:47:35 2015 +0100
+
+    Mention that named values are broken for batch (CASSANDRA-10246) in the native protocol spec
+
+ doc/native_protocol_v3.spec | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+commit 7f1fec19080c423d89ce3af823e2b1532b755035
+Author: Andrés de la Peña <a.penya.garcia@gmail.com>
+Date:   Wed Oct 28 16:41:12 2015 +0000
+
+    Add validation method to PerRowSecondaryIndex
+    
+    Patch by Andrés de la Peña; reviewed by Sam Tunnicliffe for
+    CASSANDRA-10092
+
+ CHANGES.txt                                        |   1 +
+ NEWS.txt                                           |   2 +
+ .../cassandra/cql3/statements/UpdateStatement.java |   1 +
+ .../cassandra/db/index/PerRowSecondaryIndex.java   |   5 +
+ .../cassandra/db/index/SecondaryIndexManager.java  |   8 +
+ .../apache/cassandra/thrift/CassandraServer.java   |  11 ++
+ .../db/index/PerRowSecondaryIndexTest.java         | 211 ++++++++++++++++++++-
+ 7 files changed, 234 insertions(+), 5 deletions(-)
+
+commit 32a6f2059aa3888fc0223cabcdff2ea2c9b97b21
+Author: Norman Maurer <norman@apache.org>
+Date:   Wed Oct 28 14:17:18 2015 +0100
+
+    Support encrypted and plain traffic on the same port
+    
+    patch by Norman Maurer; reviewed by Robert Stupp for CASSANDRA-10559
+
+ CHANGES.txt                                        |  1 +
+ NEWS.txt                                           |  2 +
+ conf/cassandra.yaml                                |  2 +
+ .../apache/cassandra/config/EncryptionOptions.java |  1 +
+ .../org/apache/cassandra/transport/Server.java     | 76 ++++++++++++++++++++--
+ 5 files changed, 75 insertions(+), 7 deletions(-)
+
+commit cedcf07c542235815c023b66f151ad8c7aa9ba9a
+Author: Marcus Eriksson <marcuse@apache.org>
+Date:   Mon Sep 7 10:39:15 2015 +0200
+
+    Do size tiered compaction in date tiered compaction windows
+    
+    Patch by marcuse; reviewed by Jeff Jirsa for CASSANDRA-10276
+
+ CHANGES.txt                                        |  1 +
+ .../compaction/DateTieredCompactionStrategy.java   | 46 ++++++++++-------
+ .../DateTieredCompactionStrategyTest.java          | 57 ++++++++++++++++------
+ 3 files changed, 72 insertions(+), 32 deletions(-)
+
+commit 78810f25506b3b612f22fb20ddc7500e45cb1eec
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Tue Oct 27 09:10:10 2015 -0500
+
+    cqlsh: Fix NULL option in COPY cmds after CASS-10415
+    
+    Patch by Stefania Alborghetti; reviewed by Tyler Hobbs for
+    CASSANDRA-10577
+
+ bin/cqlsh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 87f43ac51de7f34c2e65c5bb2e65d82393ea9442
+Author: Marcus Eriksson <marcuse@apache.org>
+Date:   Fri Oct 23 08:56:08 2015 +0200
+
+    Don't try to get ancestors from half-renamed sstables
+    
+    Patch by marcuse; reviewed by yukim for CASSANDRA-10501
+
+ CHANGES.txt                                             | 1 +
+ src/java/org/apache/cassandra/db/ColumnFamilyStore.java | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+commit 17082d4b54c89fd34f81400e0002fff67c30f150
+Author: Yuki Morishita <yukim@apache.org>
+Date:   Wed Sep 2 19:36:37 2015 -0500
+
+    Shutdown compaction in drain to prevent leak
+    
+    patch by yukim; reviewed by marcuse for CASSANDRA-10079
+
+ .../cassandra/db/compaction/CompactionManager.java | 40 ++++++++++++++++++----
+ .../apache/cassandra/service/StorageService.java   |  3 ++
+ 2 files changed, 36 insertions(+), 7 deletions(-)
+
+commit 34b8d8fcbf528f21ac7869685e33214af381265c
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Fri Oct 23 13:58:19 2015 -0400
+
+    Make cqlsh tests work when authentication is configured
+    
+    Patch by stefania; reviewed by aholmberg for CASSANDRA-10544
+
+ pylib/cqlshlib/test/run_cqlsh.py         |  2 +-
+ pylib/cqlshlib/test/test_cqlsh_output.py | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 5a1d376489e5884b381e3bee3afd22130945782d
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Thu Oct 22 10:12:04 2015 +0200
+
+    Make cqlsh support python-2.6 (FOLLOW-UP CASSANDRA-10415)
+    
+    patch by Stefania Alborghetti; reviewed by Benjamin Lerer for CASSANDRA-10415
+
+ pylib/cqlshlib/cqlhandling.py                | 2 +-
+ pylib/cqlshlib/test/test_cqlsh_completion.py | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 29ff1f2ac2a3da16f75ce87555df8f6014c8303e
+Author: Carl Yeksigian <carl@apache.org>
+Date:   Wed Oct 21 12:21:46 2015 -0400
+
+    (phrasing) replace 'wipe' with 'decomission'
+
+ NEWS.txt                                             | 4 ++--
+ conf/cassandra.yaml                                  | 2 +-
+ src/java/org/apache/cassandra/db/SystemKeyspace.java | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+commit a2c4d4e4888dbfb434189c05fc58c7298e1dd7ff
+Author: Sylvain Lebresne <sylvain@datastax.com>
+Date:   Wed Oct 21 14:31:59 2015 +0200
+
+    Fix typo in ticket number
+
+ CHANGES.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 9d8436f922ad2d4ee7edb647e2e1677c2194ad61
+Author: Sylvain Lebresne <sylvain@datastax.com>
+Date:   Wed Oct 21 14:26:22 2015 +0200
+
+    Avoid repetition of JVM_OPTS in debian package
+    
+    patch by urandom; reviewed by mshuler for CASSANDRA-8821
+
+ CHANGES.txt |  1 +
+ debian/init | 10 ----------
+ 2 files changed, 1 insertion(+), 10 deletions(-)
+
+commit da8be1c093ba0a78604effd76769067e428ca04d
+Author: Bereng <berenguerblasi@gmail.com>
+Date:   Mon Oct 19 16:45:23 2015 +0200
+
+    NPE fix on null highestSelectivityIndex
+    
+    Patch by Berenguer Blasi; reviewed by Sam Tunnicliffe for
+    CASSANDRA-10550
+
+ CHANGES.txt                                                   |  1 +
+ .../org/apache/cassandra/db/index/SecondaryIndexManager.java  | 11 +++++++----
+ src/java/org/apache/cassandra/service/StorageProxy.java       |  2 +-
+ 3 files changed, 9 insertions(+), 5 deletions(-)
+
+commit 86583af4ca0eac34725136adee3143f9b14b75b4
+Author: blerer <benjamin.lerer@datastax.com>
+Date:   Wed Oct 21 10:08:50 2015 +0200
+
+    Add missing CHANGES.txt entry for CASSANDRA-10363
+    
+    patch by Benjamin Lerer for CASSANDRA-10363
+
+ CHANGES.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 328916d1591be69f217f6519304651d3757d9e1d
+Author: blerer <benjamin.lerer@datastax.com>
+Date:   Tue Oct 20 14:33:50 2015 +0200
+
+    Fix paging issues with partitions containing only static columns data
+    
+    patch by Benjamin Lerer; reviewed by Sylvain Lebresne for CASSANDRA-10381
+
+ CHANGES.txt                                                      | 2 ++
+ .../org/apache/cassandra/service/pager/AbstractQueryPager.java   | 6 +++++-
+ .../org/apache/cassandra/service/pager/RangeSliceQueryPager.java | 8 ++++++--
+ src/java/org/apache/cassandra/service/pager/SliceQueryPager.java | 9 +++++++--
+ 4 files changed, 20 insertions(+), 5 deletions(-)
+
+commit 9b3b1cb03c6536d40adfcfa8f93577079b9a9d1d
+Author: blerer <benjamin.lerer@datastax.com>
+Date:   Tue Oct 20 13:54:46 2015 +0200
+
+    Fix conditions on static columns
+    
+    patch by Benjamin Lerer; reviewed by Sylvain Lebresne for CASSANDRA-10264
+
+ CHANGES.txt                                        |  1 +
+ pylib/cqlshlib/cql3handling.py                     |  2 +-
+ .../cql3/statements/ModificationStatement.java     | 24 ++++++++++++++++++++--
+ .../operations/InsertUpdateIfConditionTest.java    | 12 ++++++++++-
+ 4 files changed, 35 insertions(+), 4 deletions(-)
+
+commit b84ed1176c015552550f30629e240c320a00001b
+Author: Jeremiah Jordan <jeremiah@datastax.com>
+Date:   Mon Oct 19 14:56:02 2015 +0200
+
+    JDK bug from CASSANDRA-8220 makes drain die early also
+    
+    patch by Jeremiah Jordan; reviewed by Robert Stupp for CASSANDRA-10545
+
+ .../org/apache/cassandra/net/MessagingService.java | 30 +++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
+
+commit 27c80117d2ff62acbecc0887ca851bb541b2d830
+Author: Vovodroid <vovodroid@gmail.com>
+Date:   Sat Oct 17 11:37:47 2015 +0200
+
+    AssertionError: attempted to delete non-existing file CommitLog
+    
+    patch by Vovodroid; reviewed by Robert Stupp for CASSANDRA-10377
+
+ CHANGES.txt                                                         | 1 +
+ .../org/apache/cassandra/db/commitlog/CommitLogSegmentManager.java  | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+commit f587397c9c41c1a68b4e46fc16bad8d48c975e4d
+Author: blerer <benjamin.lerer@datastax.com>
+Date:   Fri Oct 16 14:41:54 2015 +0200
+
+    Fix sorting for queries with an IN condition on partition key columns
+    
+    patch by Benjamin Lerer; reviewed by Sam Tunnicliffe for CASSANDRA-10363
+
+ .../apache/cassandra/cql3/ColumnSpecification.java | 10 ++++
+ src/java/org/apache/cassandra/cql3/ResultSet.java  |  5 ++
+ .../apache/cassandra/cql3/UntypedResultSet.java    |  6 +--
+ .../cassandra/cql3/statements/SelectStatement.java | 18 +-------
+ .../cassandra/cql3/statements/Selection.java       | 45 +++++++++++++++++-
+ test/unit/org/apache/cassandra/cql3/CQLTester.java |  3 +-
+ .../validation/operations/SelectOrderByTest.java   | 54 +++++++++++++++++++++-
+ 7 files changed, 116 insertions(+), 25 deletions(-)
+
+commit 806378c8c295fb062f94eb8bf0f719b398d27745
+Author: Stefania Alborghetti <stefania.alborghetti@datastax.com>
+Date:   Fri Oct 16 11:47:07 2015 +0200
+
+    Fix cqlsh rules
+    
+    patch by Stefania Alborghetti; reviewed by Benjamin Lerer for
+    CASSANDRA-10415
+
+ pylib/cqlshlib/cqlhandling.py                | 10 ++++++++++
+ pylib/cqlshlib/test/cassconnect.py           |  3 ++-
+ pylib/cqlshlib/test/run_cqlsh.py             |  2 +-
+ pylib/cqlshlib/test/test_cqlsh_completion.py | 11 ++++-------
+ pylib/cqlshlib/test/test_cqlsh_output.py     |  4 ++--
+ pylib/cqlshlib/test/test_keyspace_init.cql   |  2 +-
+ 6 files changed, 20 insertions(+), 12 deletions(-)
+
+commit a61fc01f418426847e3aad133127da3615813236
+Author: Branimir Lambov <branimir.lambov@datastax.com>
+Date:   Wed Oct 7 14:46:24 2015 +0300
+
+    Skip redundant tombstones on compaction.
+    
+    Patch by Branimir Lambov; reviewed by marcuse for CASSANDRA-7953
+
+ CHANGES.txt                                        |   1 +
+ src/java/org/apache/cassandra/db/ColumnIndex.java  |  32 +++--
+ .../org/apache/cassandra/db/RangeTombstone.java    | 135 +++++++++++----------
+ .../cassandra/cql3/RangeTombstoneMergeTest.java    | 125 +++++++++++++++++++
+ 4 files changed, 218 insertions(+), 75 deletions(-)
+
+commit 02f88e38e1f148286cf2f6383d65d9d0f3697a08
+Author: Adam Holmberg <adam.holmberg@datastax.com>
+Date:   Wed Oct 14 11:17:50 2015 -0500
+
+    cqlsh: Fix display of -infinity
+    
+    Patch by Adam Holmberg; reviewed by Tyler Hobbs for CASSANDRA-10523
+
+ CHANGES.txt                  | 1 +
+ pylib/cqlshlib/formatting.py | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+commit bc1058f8ea1e50d57db6e06fb027845871d9927c
+Author: J.P.Eiti Kimura <eiti.kimura@movile.com>
+Date:   Wed Oct 7 23:19:36 2015 -0300
+
+    Stronger assertion on null hostId in SP::writeHintForMutation
+    
+    patch by J.P.Eiti Kimura; reviewed by Paulo Motta for CASSANDRA-10233
+
+ src/java/org/apache/cassandra/service/StorageProxy.java | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+commit 3c0a1a5c1a77ca1148bef1712a2859400d85ea8c
+Author: Aaron Ploetz <aaronploetz@gmail.com>
+Date:   Tue May 5 13:13:55 2015 -0400
+
+    (cqlsh) allow custom time_format for COPY TO
+    
+    patch by Aaron Ploetz; reviewed by Carl Yeksigian for CASSANDRA-8970
+
+ CHANGES.txt |  1 +
+ bin/cqlsh   | 23 ++++++++++++++---------
+ 2 files changed, 15 insertions(+), 9 deletions(-)
+
+commit 711870e3484a7ebec5fe47b2a90bf8f8b3d1e0af
+Author: Carl Yeksigian <carl@apache.org>
+Date:   Mon Oct 12 12:47:16 2015 -0400
+
+    Don't allow startup if the node's rack has changed
+    
+    patch by Carl Yeksigian; revieiwed by Paulo Motta for CASSANDRA-10242
+
+ CHANGES.txt                                        |  3 +-
+ NEWS.txt                                           | 13 ++++++
+ conf/cassandra-rackdc.properties                   |  3 ++
+ conf/cassandra.yaml                                |  3 ++
+ .../org/apache/cassandra/db/SystemKeyspace.java    | 49 +++++++++++++++-------
+ 5 files changed, 56 insertions(+), 15 deletions(-)
+
+commit 626ac94cd53323cf84f92ab0d1f3e2a8c765f22b
+Author: Carl Yeksigian <carl@apache.org>
+Date:   Fri Apr 24 11:00:23 2015 -0400
+
+    (cqlsh) show partial trace if incomplete after max_trace_wait
+    
+    patch by Carl Yeksigian; reviewed by Paulo Motta for CASSANDRA-7645
+
+ CHANGES.txt | 5 +++++
+ bin/cqlsh   | 3 +++
+ 2 files changed, 8 insertions(+)
